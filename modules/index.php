@@ -42,8 +42,6 @@ $recordsData = $records['result'];
 // Get user map for assigned_user_id fields
 $userMap = getUsers($baseUrl, $session);
 
-// Modules to get related data for each contact
-$relatedModules = ['Potentials', 'Documents', 'Activities'];
 
 $output = [];
 foreach ($recordsData as $recordData) {
@@ -72,6 +70,8 @@ foreach ($recordsData as $recordData) {
     $entry[] = $fieldEntry;
   }
 
+  // Modules to get related data for each contact
+  $relatedModules = ['Potentials', 'Documents', 'Activities'];
   // Fetch related data for this contact record
   $recordId = $recordData['id'];
   $relatedData = [];
