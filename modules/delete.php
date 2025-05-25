@@ -1,8 +1,10 @@
 <?php
-require_once __DIR__ . '/../config/config.php';
-
-// Set response header
+// session_start();
 header('Content-Type: application/json');
+
+include __DIR__ . '/../config/config.php';
+include __DIR__ . '/../auth/verifySession.php'; 
+
 
 // Get JSON input
 $inputJSON = file_get_contents('php://input');
@@ -14,19 +16,15 @@ if (empty($input['id'])) {
   echo json_encode(['error' => 'Missing id in POST data']);
   exit;
 }
-
-// Authenticate and get session
-$loginJson = file_get_contents('http://localhost:8080/vtigercrm/api/auth/login.php');
-$login = json_decode($loginJson, true);
-
-if (empty($login['sessionName'])) {
-  http_response_code(500);
-  echo json_encode(['error' => 'Login failed']);
-  exit;
-}
-
-$session = $login['sessionName'];
 $id = $input['id'];
+
+
+
+$moduleName = 'Contacts';
+$session = verifySession($baseUrl, 'Contacts');
+
+
+
 
 // Prepare API request data
 $postData = [

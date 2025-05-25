@@ -1,11 +1,15 @@
 <?php
-header('Content-Type: application/json; charset=utf-8');
+
+header('Content-Type: application/json');
 
 include __DIR__ . '/../config/config.php';
+include __DIR__ . '/../auth/verifySession.php'; 
 
-// استقبال بيانات JSON من POST
+
+// Receive JSON data from POST
 $inputJSON = file_get_contents('php://input');
 $input = json_decode($inputJSON, true);
+
 
 if (!$input) {
   http_response_code(400);
@@ -13,6 +17,13 @@ if (!$input) {
   exit;
 }
 
+
+$moduleName = 'Contacts';
+
+$session = verifySession($baseUrl, $moduleName);
+
+
+// Check for required fields
 if (!isset($input['moduleName'], $input['recordId'], $input['fields'])) {
   http_response_code(400);
   echo json_encode(['error' => 'Missing parameters: moduleName, recordId, or fields']);
@@ -21,34 +32,20 @@ if (!isset($input['moduleName'], $input['recordId'], $input['fields'])) {
 
 $moduleName = $input['moduleName'];
 $recordId = $input['recordId'];
-$fieldsToUpdate = $input['fields']; // هذا مصفوفة associative [ 'fieldname' => 'value', ... ]
+$fieldsToUpdate = $input['fields'];
 
-// ** 1. نحتاج لجلسة (sessionName) أولاً - ممكن تعيد استخدام نفس طريقة login.php **
-$loginJson = file_get_contents('http://localhost:8080/vtigercrm/api/auth/login.php');
-$login = json_decode($loginJson, true);
-
-if (!isset($login['sessionName'])) {
-  http_response_code(500);
-  echo json_encode(['error' => 'Login failed']);
-  exit;
-}
-$session = $login['sessionName'];
-
-// ** 2. بناء بيانات التحديث (POST) حسب API vtiger **
-// vtiger API عادة يستقبل بيانات على شكل JSON مع حقل "element" يحتوي على السجل
-// حسب توثيق vtiger، نحتاج على الأقل id و الحقول الجديدة
-
+// Build update element
 $element = $fieldsToUpdate;
 $element['id'] = $recordId;
 
-// بناء بيانات POST (form-urlencoded)
+// Prepare POST data
 $postData = [
   'operation' => 'update',
   'sessionName' => $session,
   'element' => json_encode($element),
 ];
 
-// إرسال الطلب باستخدام cURL (أفضل من file_get_contents للـ POST)
+// Send request
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $baseUrl);
 curl_setopt($ch, CURLOPT_POST, true);
@@ -73,12 +70,13 @@ if (!$result) {
 }
 
 if (isset($result['success']) && $result['success']) {
-  $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId);
+  // $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId);
+  $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId) . "&sessionName=" . urlencode($session);
+
   $contactJson = file_get_contents($url);
   $contact = json_decode($contactJson, true);
 
   echo json_encode(['success' => true, 'contact' => $contact]);
-
 } else {
   http_response_code(400);
   echo json_encode(['error' => 'Update failed', 'details' => $result]);

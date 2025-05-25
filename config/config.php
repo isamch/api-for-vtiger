@@ -1,7 +1,7 @@
 <?php
+
+
 $baseUrl = 'http://localhost:8080/vtigercrm/webservice.php';
-$username = 'admin';
-$accessKey = 'FNs7G901NDx8DjX';
 
 function sendRequest($url, $postData = null) {
     $options = ['http' => ['header' => "Content-Type: application/x-www-form-urlencoded\r\n"]];

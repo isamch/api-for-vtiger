@@ -4,20 +4,14 @@ header('Content-Type: application/json');
 include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
+include __DIR__ . '/../auth/verifySession.php'; 
 
 
-// Request session from login.php
-$loginJson = file_get_contents('http://localhost:8080/vtigercrm/api/auth/login.php');
-$login = json_decode($loginJson, true);
 
-if (!isset($login['sessionName'])) {
-  http_response_code(500);
-  echo json_encode(['error' => 'Login failed']);
-  exit;
-}
 
-$session = $login['sessionName'];
 $moduleName = 'Contacts';
+
+$session = verifySession($baseUrl, $moduleName);
 
 
 
@@ -94,7 +88,6 @@ foreach ($relatedModules as $mod) {
 }
 
 
-header('Content-Type: application/json');
 echo json_encode([
   'fields' => [$output],
   'related' => [$relatedData]
