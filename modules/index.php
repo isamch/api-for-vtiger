@@ -44,12 +44,26 @@ $recordsData = $records['result'];
 // Get user map for assigned_user_id fields
 $userMap = getUsers($baseUrl, $session);
 
+// Define the list of desired field labels
+$desiredLabels = [
+    "First Name", "Last Name", "Email", "Phone",
+    "Organization Name", "Title", "Assigned To",
+    "Mailing City", "Mailing Country"
+];
 
 $output = [];
 foreach ($recordsData as $recordData) {
 	$entry = [];
 	foreach ($fields as $field) {
-		if (!isset($field['name'])) continue;
+		// Ensure both field name and label are set before proceeding
+		if (!isset($field['name']) || !isset($field['label'])) {
+			continue;
+		}
+
+		// Filter fields based on the desired labels
+		if (!in_array($field['label'], $desiredLabels, true)) {
+			continue;
+		}
 
 		$typeName = $field['type']['name'] ?? 'string';
 		$fieldEntry = [
