@@ -12,8 +12,6 @@ include __DIR__ . '/../auth/verifySession.php';
 
 $moduleName = $_GET['moduleName'];
 
-echo json_encode(['moduleName' => $moduleName]);
-exit;
 
 $session = verifySession($baseUrl, 'Contacts');
 
