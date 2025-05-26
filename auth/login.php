@@ -40,8 +40,8 @@ $loginJson = sendRequest($baseUrl, $postData);
 $login = json_decode($loginJson, true);
 
 if (!$login['success']) {
-    http_response_code(500);
-    echo json_encode(['error' => 'Login failed']);
+    http_response_code(401);
+    echo json_encode(['error' => 'Wrong username or accesskey']);
     exit;
 }
 

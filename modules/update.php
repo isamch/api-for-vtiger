@@ -45,6 +45,7 @@ $postData = [
   'element' => json_encode($element),
 ];
 
+
 // Send request
 $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, $baseUrl);
@@ -70,7 +71,6 @@ if (!$result) {
 }
 
 if (isset($result['success']) && $result['success']) {
-  // $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId);
   $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId) . "&sessionName=" . urlencode($session);
 
   $contactJson = file_get_contents($url);
