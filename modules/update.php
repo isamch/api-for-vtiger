@@ -18,7 +18,9 @@ if (!$input) {
 }
 
 
-$moduleName = 'Contacts';
+$moduleName = $input['moduleName'] ?? 'Contacts';
+
+
 
 $session = verifySession($baseUrl, $moduleName);
 

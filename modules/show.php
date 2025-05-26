@@ -8,8 +8,12 @@ include __DIR__ . '/../auth/verifySession.php';
 
 
 
+$inputJSON = file_get_contents('php://input');
+$input = json_decode($inputJSON, true);
 
-$moduleName = 'Contacts';
+
+$moduleName = $input['moduleName'] ?? 'Contacts';
+
 
 $session = verifySession($baseUrl, $moduleName);
 

@@ -5,7 +5,12 @@ include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../auth/verifySession.php'; 
 
 
-$moduleName = 'Contacts';
+$inputJSON = file_get_contents('php://input');
+$input = json_decode($inputJSON, true);
+
+$moduleName = $input['moduleName'] ?? 'Contacts';
+
+
 
 try {
 	$session = verifySession($baseUrl, $moduleName);
