@@ -5,15 +5,12 @@ include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../auth/verifySession.php'; 
 
 
-$inputJSON = file_get_contents('php://input');
-$input = json_decode($inputJSON, true);
 
-$moduleName = $input['moduleName'] ?? 'Contacts';
-
+$moduleName = $_GET['moduleName'];
 
 
 try {
-	$session = verifySession($baseUrl, $moduleName);
+	$session = verifySession($baseUrl, 'Contacts');
 
 	$describeJson = @file_get_contents("$baseUrl?operation=describe&sessionName=$session&elementType=$moduleName");
   

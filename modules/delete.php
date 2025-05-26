@@ -20,7 +20,7 @@ $id = $input['id'];
 
 
 
-$moduleName = $input['moduleName'] ?? 'Contacts';
+$moduleName = $input['moduleName'];
 
 $session = verifySession($baseUrl, 'Contacts');
 

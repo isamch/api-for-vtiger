@@ -8,15 +8,9 @@ include __DIR__ . '/../auth/verifySession.php';
 
 
 
-$inputJSON = file_get_contents('php://input');
-$input = json_decode($inputJSON, true);
+$moduleName = $_GET['moduleName'];
 
-
-$moduleName = $input['moduleName'] ?? 'Contacts';
-
-
-$session = verifySession($baseUrl, $moduleName);
-
+$session = verifySession($baseUrl, 'Contacts');
 
 
 // === VERIFY ID PARAMETER ===

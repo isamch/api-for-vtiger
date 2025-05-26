@@ -5,16 +5,15 @@ header('Content-Type: application/json');
 include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
-include __DIR__ . '/../auth/verifySession.php'; 
+include __DIR__ . '/../auth/verifySession.php';
 
 
 
-$inputJSON = file_get_contents('php://input');
-$input = json_decode($inputJSON, true);
 
+$moduleName = $_GET['moduleName'];
 
-$moduleName = $input['moduleName'] ?? 'Contacts';
-
+echo json_encode(['moduleName' => $moduleName]);
+exit;
 
 $session = verifySession($baseUrl, 'Contacts');
 
@@ -37,7 +36,7 @@ $recordsJson = file_get_contents($queryUrl);
 $records = json_decode($recordsJson, true);
 if (!$records || !$records['success']) {
 	http_response_code(500);
-	die(json_encode(['error' => 'Failed to fetch contacts']));
+	die(json_encode(['error' => "Failed to fetch $moduleName"]));
 }
 $recordsData = $records['result'];
 
@@ -46,9 +45,15 @@ $userMap = getUsers($baseUrl, $session);
 
 // Define the list of desired field labels
 $desiredLabels = [
-    "First Name", "Last Name", "Email", "Phone",
-    "Organization Name", "Title", "Assigned To",
-    "Mailing City", "Mailing Country"
+	"First Name",
+	"Last Name",
+	"Email",
+	"Phone",
+	"Organization Name",
+	"Title",
+	"Assigned To",
+	"Mailing City",
+	"Mailing Country"
 ];
 
 $output = [];

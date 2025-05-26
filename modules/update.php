@@ -17,14 +17,6 @@ if (!$input) {
   exit;
 }
 
-
-$moduleName = $input['moduleName'] ?? 'Contacts';
-
-
-
-$session = verifySession($baseUrl, $moduleName);
-
-
 // Check for required fields
 if (!isset($input['moduleName'], $input['recordId'], $input['fields'])) {
   http_response_code(400);
@@ -32,7 +24,12 @@ if (!isset($input['moduleName'], $input['recordId'], $input['fields'])) {
   exit;
 }
 
+
 $moduleName = $input['moduleName'];
+
+$session = verifySession($baseUrl, 'Contacts');
+
+
 $recordId = $input['recordId'];
 $fieldsToUpdate = $input['fields'];
 
@@ -73,7 +70,7 @@ if (!$result) {
 }
 
 if (isset($result['success']) && $result['success']) {
-  $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId) . "&sessionName=" . urlencode($session);
+  $url = "http://localhost:8080/vtigercrm/api/modules/show.php?id=" . urlencode($recordId) . "&sessionName=" . urlencode($session) . "&moduleName=" . urlencode($moduleName);
 
   $contactJson = file_get_contents($url);
   $contact = json_decode($contactJson, true);
