@@ -41,6 +41,10 @@ $recordsData = $records['result'];
 // Get user map for assigned_user_id fields
 $userMap = getUsers($baseUrl, $session);
 
+
+// echo json_encode(['userMap' => $userMap]);
+// exit;
+
 // Define the list of desired field labels
 $desiredLabels = [
 	"First Name",
@@ -83,7 +87,10 @@ foreach ($recordsData as $recordData) {
 
 		if ($field['name'] === 'assigned_user_id') {
 			$fieldEntry['options'] = array_keys($userMap);
-			$fieldEntry['userMap'] = $userMap;
+
+			$fieldEntry['userMap'] = [ $recordData[$field['name']] => $userMap[$recordData[$field['name']]] ];
+
+		
 		}
 
 		$entry[] = $fieldEntry;
