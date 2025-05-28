@@ -22,7 +22,7 @@ $id = $input['id'];
 
 $moduleName = $input['moduleName'];
 
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 
 

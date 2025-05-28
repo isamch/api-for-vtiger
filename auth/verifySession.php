@@ -24,11 +24,10 @@ function getSessionName() {
     exit;
 }
 
-function verifySession($baseUrl, $moduleName = 'Contacts') {
+function verifySession($baseUrl) {
     $session = getSessionName();
 
-    // Verify session validity using describe (or another appropriate operation)
-    $checkSessionUrl = "$baseUrl?operation=describe&sessionName=$session&elementType=$moduleName";
+    $checkSessionUrl = "$baseUrl?operation=listtypes&sessionName=$session";
     $response = sendRequest($checkSessionUrl);
     $result = json_decode($response, true);
 

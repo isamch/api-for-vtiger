@@ -27,7 +27,7 @@ if (!isset($input['moduleName'], $input['recordId'], $input['fields'])) {
 
 $moduleName = $input['moduleName'];
 
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 
 $recordId = $input['recordId'];

@@ -26,7 +26,7 @@ $moduleName = $input['moduleName'];
 $fieldsToCreate = $input['fields'];
 
 
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 $element = $fieldsToCreate;
 

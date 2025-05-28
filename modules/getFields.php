@@ -10,7 +10,7 @@ $moduleName = $_GET['moduleName'];
 
 
 try {
-	$session = verifySession($baseUrl, 'Contacts');
+	$session = verifySession($baseUrl);
 
 	$describeJson = @file_get_contents("$baseUrl?operation=describe&sessionName=$session&elementType=$moduleName");
   

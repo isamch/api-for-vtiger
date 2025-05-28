@@ -10,7 +10,7 @@ include __DIR__ . '/../auth/verifySession.php';
 
 $moduleName = $_GET['moduleName'];
 
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 
 // === VERIFY ID PARAMETER ===

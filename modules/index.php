@@ -12,8 +12,7 @@ include __DIR__ . '/../auth/verifySession.php';
 
 $moduleName = $_GET['moduleName'];
 
-
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 
 
@@ -25,6 +24,7 @@ if (!$describe || !$describe['success']) {
 	http_response_code(500);
 	die(json_encode(['error' => 'Describe failed']));
 }
+
 $fields = $describe['result']['fields'];
 
 // Fetch all contacts

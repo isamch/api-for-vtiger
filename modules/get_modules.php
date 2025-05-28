@@ -7,7 +7,7 @@ include __DIR__ . '/../auth/verifySession.php';
 
 
 
-$session = verifySession($baseUrl, 'Contacts');
+$session = verifySession($baseUrl);
 
 
 
