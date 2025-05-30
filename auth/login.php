@@ -47,4 +47,5 @@ if (!$login['success']) {
 
 // $_SESSION['sessionName'] = $login['result']['sessionName'];
 
-echo json_encode(['sessionName' => $login['result']['sessionName']]);
+echo json_encode(['Auth User' => $login['result']]);
+// echo json_encode(['sessionName' => $login['result']['sessionName']]);

@@ -4,6 +4,7 @@ header('Content-Type: application/json');
 include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
+// include __DIR__ . '/../helpers/image.php';
 include __DIR__ . '/../auth/verifySession.php'; 
 
 
@@ -33,6 +34,8 @@ if (!$contact || !$contact['success']) {
   exit;
 }
 
+
+
 $contactData = $contact['result'];
 
 // === GET FIELD DESCRIPTIONS ===
@@ -49,10 +52,29 @@ $fields = $describe['result']['fields'];
 // Get user map for assigned_user_id fields
 $userMap = getUsers($baseUrl, $session);
 
+
+
+
+
+
+
+
+
+
+// Define the list of desired field labels
+$desiredFields = [
+	"imagename"
+];
+
 // === BUILD OUTPUT FOR THE SINGLE CONTACT ===
 $output = [];
 foreach ($fields as $field) {
   if (!isset($field['name'])) continue;
+
+  if (in_array($field['name'], $desiredFields, false)) {
+    continue;
+  }
+
 
   $typeName = $field['type']['name'] ?? 'string';
   $fieldEntry = [
@@ -67,10 +89,19 @@ foreach ($fields as $field) {
     $fieldEntry['options'] = array_map(fn($o) => $o['value'], $field['type']['picklistValues']);
   }
 
+
+  if ($field['name'] === 'modifiedby') {
+    $fieldEntry['value'] = $userMap[ $contactData[ $field['name'] ] ];
+  }
+
+
   if ($field['name'] === 'assigned_user_id') {
     $fieldEntry['options'] = array_keys($userMap);
     $fieldEntry['userMap'] = $userMap;
   }
+
+
+  
 
   $output[] = $fieldEntry;
 }
@@ -86,7 +117,9 @@ foreach ($relatedModules as $mod) {
 }
 
 
+
 echo json_encode([
   'fields' => [$output],
-  'related' => [$relatedData]
+  'related' => [$relatedData],
+  'image' => $imageData
 ]);

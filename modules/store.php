@@ -73,7 +73,7 @@ if (isset($result['success']) && $result['success']) {
     $recordJson = file_get_contents($url);
     $record = json_decode($recordJson, true);
 
-    echo json_encode(['success' => true, 'record' => $record]);
+    echo json_encode(['success' => true, 'id' => $record['result']['id']]);
   } else {
     echo json_encode(['success' => true, 'message' => 'Record created but ID not returned', 'result' => $result]);
   }
