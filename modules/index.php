@@ -6,7 +6,7 @@ include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
 include __DIR__ . '/../auth/verifySession.php';
-
+include __DIR__ . '/../helpers/filterFields.php';
 
 
 
@@ -27,6 +27,7 @@ if (!$describe || !$describe['success']) {
 
 $fields = $describe['result']['fields'];
 
+
 // Fetch all contacts
 $query = "SELECT * FROM $moduleName;";
 $queryUrl = "$baseUrl?operation=query&sessionName=$session&query=" . urlencode($query);
@@ -36,19 +37,23 @@ if (!$records || !$records['success']) {
 	http_response_code(500);
 	die(json_encode(['error' => "Failed to fetch $moduleName"]));
 }
+
 $recordsData = $records['result'];
+
+
+
 
 // Get user map for assigned_user_id fields
 $userMap = getUsers($baseUrl, $session);
 
 
-// echo json_encode(['userMap' => $userMap]);
-// exit;
-
 // Define the list of desired field labels
-$desiredFields = [
-	"imagename"
-];
+// $desiredFields = [
+// 	"imagename"
+// ];
+
+$desiredFields = getSummaryFields($moduleName);
+
 
 $output = [];
 foreach ($recordsData as $recordData) {
@@ -57,18 +62,21 @@ foreach ($recordsData as $recordData) {
 		// Ensure both field name and label are set before proceeding
 
 		// Filter fields based on the desired fields
-		if (in_array($field['name'], $desiredFields, false)) {
+		if (!in_array($field['name'], $desiredFields, false)) {
 			continue;
 		}
 
+		// Skip image and file type fields
+		if (($field['type']['name'] ?? '') === 'image' || ($field['type']['name'] ?? '') === 'file') {
+			continue;
+		}
 		
-
 		$typeName = $field['type']['name'] ?? 'string';
 		$fieldEntry = [
 			'fieldname' => $field['name'],
 			'label' => $field['label'],
 			'type' => $typeName,
-			'value' => $recordData[$field['name']] ?? '',
+			'value' => ($recordData[$field['name']] ?? '') === '1' ? 'yes' : (($recordData[$field['name']] ?? '') === '0' ? 'no' : ($recordData[$field['name']] ?? '')),
 			'mandatory' => !empty($field['mandatory']),
 		];
 
@@ -91,18 +99,18 @@ foreach ($recordsData as $recordData) {
 	}
 
 	// Modules to get related data for each contact
-	$relatedModules = ['Potentials', 'Documents', 'Activities'];
+	// $relatedModules = ['Potentials', 'Documents', 'Activities'];
 	// Fetch related data for this contact record
-	$recordId = $recordData['id'];
-	$relatedData = [];
-	foreach ($relatedModules as $mod) {
-		$relatedData[$mod] = getRelatedModuleData($baseUrl, $session, $mod, $recordId);
-	}
+	// $recordId = $recordData['id'];
+	// $relatedData = [];
+	// foreach ($relatedModules as $mod) {
+	// 	$relatedData[$mod] = getRelatedModuleData($baseUrl, $session, $mod, $recordId);
+	// }
 
 	// Add related data to the contact entry
 	$output[] = [
 		'fields' => $entry,
-		'related' => $relatedData,
+		// 'related' => $relatedData,
 	];
 }
 

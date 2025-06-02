@@ -6,7 +6,7 @@ include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
 // include __DIR__ . '/../helpers/image.php';
 include __DIR__ . '/../auth/verifySession.php'; 
-
+include __DIR__ . '/../helpers/excludedFields.php';
 
 
 $moduleName = $_GET['moduleName'];
@@ -62,26 +62,30 @@ $userMap = getUsers($baseUrl, $session);
 
 
 // Define the list of desired field labels
-$desiredFields = [
-	"imagename"
-];
+$excludedFields = getExcludedFields($moduleName);
 
 // === BUILD OUTPUT FOR THE SINGLE CONTACT ===
 $output = [];
 foreach ($fields as $field) {
   if (!isset($field['name'])) continue;
 
-  if (in_array($field['name'], $desiredFields, false)) {
+  if (in_array($field['name'], $excludedFields, false)) {
     continue;
   }
 
 
+
+  if (($field['type']['name'] ?? '') === 'image' || ($field['type']['name'] ?? '') === 'file') {
+    continue;
+  }
+
   $typeName = $field['type']['name'] ?? 'string';
+  
   $fieldEntry = [
     'fieldname' => $field['name'],
     'label' => $field['label'],
     'type' => $typeName,
-    'value' => $contactData[$field['name']] ?? '',
+    'value' => ($contactData[$field['name']] ?? '') === '1' ? 'yes' : (($contactData[$field['name']] ?? '') === '0' ? 'no' : ($contactData[$field['name']] ?? '')),
     'mandatory' => !empty($field['mandatory']),
   ];
 
@@ -109,11 +113,13 @@ foreach ($fields as $field) {
 
 
 
-$relatedModules = ['Potentials', 'Documents', 'Activities'];
+// $relatedModules = ['Potentials', 'Documents', 'Activities'];
+$relatedModules = ['Calendar', 'Documents', 'Potentials'];
 $relatedData = [];
 
-foreach ($relatedModules as $mod) {
-  $relatedData[$mod] = getRelatedModuleData($baseUrl, $session, $mod, $id);
+
+foreach ($relatedModules as $relatedModule) {
+  $relatedData[$relatedModule] = getRelatedModuleData($baseUrl, $session, $relatedModule, $id);
 }
 
 
