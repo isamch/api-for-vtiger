@@ -6,14 +6,14 @@ include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
 include __DIR__ . '/../auth/verifySession.php';
-include __DIR__ . '/../helpers/filterFields.php';
 
+
+include __DIR__ . '/../helpers/modules/modulesData.php';
 
 
 $moduleName = $_GET['moduleName'];
 
 $session = verifySession($baseUrl);
-
 
 
 
@@ -47,12 +47,7 @@ $recordsData = $records['result'];
 $userMap = getUsers($baseUrl, $session);
 
 
-// Define the list of desired field labels
-// $desiredFields = [
-// 	"imagename"
-// ];
-
-$desiredFields = getSummaryFields($moduleName);
+$moduleFields = getModuleData($moduleName);
 
 
 $output = [];
@@ -61,16 +56,24 @@ foreach ($recordsData as $recordData) {
 	foreach ($fields as $field) {
 		// Ensure both field name and label are set before proceeding
 
-		// Filter fields based on the desired fields
-		if (!in_array($field['name'], $desiredFields, false)) {
-			continue;
+
+		// check if field is mandatory
+		if (!$field['mandatory']) {
+
+			// filter by summary fields
+			if (!in_array($field['name'], $moduleFields['summaryFields'], false)) {
+				continue;
+			}
+
+			// filter by data type
+			if (in_array($field['type']['name'], $moduleFields['excludedTypes'], false)) {
+				continue;
+			}
 		}
 
-		// Skip image and file type fields
-		if (($field['type']['name'] ?? '') === 'image' || ($field['type']['name'] ?? '') === 'file') {
-			continue;
-		}
-		
+
+
+
 		$typeName = $field['type']['name'] ?? 'string';
 		$fieldEntry = [
 			'fieldname' => $field['name'],
@@ -85,32 +88,26 @@ foreach ($recordsData as $recordData) {
 		}
 
 		if ($field['name'] === 'modifiedby') {
-			$fieldEntry['value'] = $userMap[$recordData[$field['name']] ];
+			$fieldEntry['value'] = $userMap[$recordData[$field['name']]];
 		}
 
 		if ($field['name'] === 'assigned_user_id') {
 			$fieldEntry['options'] = array_keys($userMap);
-
-			$fieldEntry['userMap'] = [ $recordData[$field['name']] => $userMap[$recordData[$field['name']]] ];
-		
+			$fieldEntry['userMap'] = [$recordData[$field['name']] => $userMap[$recordData[$field['name']]]];
 		}
 
 		$entry[] = $fieldEntry;
 	}
 
-	// Modules to get related data for each contact
-	// $relatedModules = ['Potentials', 'Documents', 'Activities'];
-	// Fetch related data for this contact record
-	// $recordId = $recordData['id'];
-	// $relatedData = [];
-	// foreach ($relatedModules as $mod) {
-	// 	$relatedData[$mod] = getRelatedModuleData($baseUrl, $session, $mod, $recordId);
-	// }
+
+
+
+
 
 	// Add related data to the contact entry
 	$output[] = [
 		'fields' => $entry,
-		// 'related' => $relatedData,
+		'relatedModules' => $moduleFields['relatedModules'],
 	];
 }
 

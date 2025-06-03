@@ -4,9 +4,9 @@ header('Content-Type: application/json');
 include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
-// include __DIR__ . '/../helpers/image.php';
 include __DIR__ . '/../auth/verifySession.php'; 
-include __DIR__ . '/../helpers/excludedFields.php';
+
+include __DIR__ . '/../helpers/modules/modulesData.php';
 
 
 $moduleName = $_GET['moduleName'];
@@ -62,22 +62,25 @@ $userMap = getUsers($baseUrl, $session);
 
 
 // Define the list of desired field labels
-$excludedFields = getExcludedFields($moduleName);
+$moduleFields = getModuleData($moduleName);
 
 // === BUILD OUTPUT FOR THE SINGLE CONTACT ===
 $output = [];
 foreach ($fields as $field) {
   if (!isset($field['name'])) continue;
 
-  if (in_array($field['name'], $excludedFields, false)) {
+
+  // filter by excluded fields
+  if (in_array($field['name'], $moduleFields['excludedFields'], false)) {
+    continue;
+  }
+
+  // filter by data type
+  if (in_array($field['type']['name'], $moduleFields['excludedTypes'], false)) {
     continue;
   }
 
 
-
-  if (($field['type']['name'] ?? '') === 'image' || ($field['type']['name'] ?? '') === 'file') {
-    continue;
-  }
 
   $typeName = $field['type']['name'] ?? 'string';
   
