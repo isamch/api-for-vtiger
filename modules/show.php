@@ -4,7 +4,7 @@ header('Content-Type: application/json');
 include __DIR__ . '/../config/config.php';
 include __DIR__ . '/../helpers/relatedModulesFunction.php';
 include __DIR__ . '/../helpers/users.php';
-include __DIR__ . '/../auth/verifySession.php'; 
+include __DIR__ . '/../auth/verifySession.php';
 
 include __DIR__ . '/../helpers/modules/modulesData.php';
 
@@ -69,21 +69,24 @@ $output = [];
 foreach ($fields as $field) {
   if (!isset($field['name'])) continue;
 
+  // check if field is mandatory
+  if (!$field['mandatory']) {
 
-  // filter by excluded fields
-  if (in_array($field['name'], $moduleFields['excludedFields'], false)) {
-    continue;
+    // filter by excluded fields
+    if (in_array($field['name'], $moduleFields['excludedFields'], false)) {
+      continue;
+    }
+
+    // filter by data type
+    if (in_array($field['type']['name'], $moduleFields['excludedTypes'], false)) {
+      continue;
+    }
+
   }
-
-  // filter by data type
-  if (in_array($field['type']['name'], $moduleFields['excludedTypes'], false)) {
-    continue;
-  }
-
 
 
   $typeName = $field['type']['name'] ?? 'string';
-  
+
   $fieldEntry = [
     'fieldname' => $field['name'],
     'label' => $field['label'],
@@ -98,7 +101,7 @@ foreach ($fields as $field) {
 
 
   if ($field['name'] === 'modifiedby') {
-    $fieldEntry['value'] = $userMap[ $contactData[ $field['name'] ] ];
+    $fieldEntry['value'] = $userMap[$contactData[$field['name']]];
   }
 
 
@@ -108,7 +111,7 @@ foreach ($fields as $field) {
   }
 
 
-  
+
 
   $output[] = $fieldEntry;
 }
@@ -116,10 +119,9 @@ foreach ($fields as $field) {
 
 
 
-// $relatedModules = ['Potentials', 'Documents', 'Activities'];
-$relatedModules = ['Calendar', 'Documents', 'Potentials'];
-$relatedData = [];
+$relatedModules = $moduleFields['relatedModules'];
 
+$relatedData = [];
 
 foreach ($relatedModules as $relatedModule) {
   $relatedData[$relatedModule] = getRelatedModuleData($baseUrl, $session, $relatedModule, $id);
@@ -130,5 +132,4 @@ foreach ($relatedModules as $relatedModule) {
 echo json_encode([
   'fields' => [$output],
   'related' => [$relatedData],
-  'image' => $imageData
 ]);

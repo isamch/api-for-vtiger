@@ -30,11 +30,28 @@ function getAllModules($session) {
 
     $result = json_decode($response, true);
 
-    if (isset($result['success']) && $result['success']) {
-        return ['success' => true, 'data' => $result['result']['types']];
+    include __DIR__ . '/../helpers/modules/modulesData.php';
+    
+    $types = $result['result']['types'];
+
+    foreach ($types as $type) {
+        $moduleData = getModuleData($type);
+        if (isset($moduleData['name'])) {
+            $filteredTypes[] = $moduleData['name'];
+        }
     }
+
+
+    if (isset($result['success']) && $result['success']) {
+        return [
+            'success' => true,
+            'data' => $filteredTypes
+        ];
+    }
+
 
     return ['success' => false, 'error' => $result['error']['message'] ?? 'Unknown error'];
 }
+
 
 echo json_encode(getAllModules($session), JSON_PRETTY_PRINT);

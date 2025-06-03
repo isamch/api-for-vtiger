@@ -10,11 +10,13 @@ function getRelatedModuleData($baseUrl, $session, $relatedModule, $recordId) {
     $data = json_decode($json, true);
     
 
+ 
 
+    
     if ($data && $data['success']) {
         return $data['result'];
     } else {
-        return ['error' => 'Failed to fetch'];
+        return ['error' => $data['error']['message'] ?? 'Unknown error'];
     }
 }
 
