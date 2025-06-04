@@ -57,10 +57,6 @@ $userMap = getUsers($baseUrl, $session);
 
 
 
-
-
-
-
 // Define the list of desired field labels
 $moduleFields = getModuleData($moduleName);
 
@@ -112,7 +108,6 @@ foreach ($fields as $field) {
 
 
 
-
   $output[] = $fieldEntry;
 }
 
@@ -124,12 +119,17 @@ $relatedModules = $moduleFields['relatedModules'];
 $relatedData = [];
 
 foreach ($relatedModules as $relatedModule) {
-  $relatedData[$relatedModule] = getRelatedModuleData($baseUrl, $session, $relatedModule, $id);
+  $moduleData = getRelatedModuleData($baseUrl, $session, $relatedModule, $id);
+  if (isset($moduleData['error'])) {
+    $relatedData[$relatedModule] = ['error' => $moduleData['error']];
+  } else {
+    $relatedData[$relatedModule] = $moduleData;
+  }
 }
 
 
 
 echo json_encode([
   'fields' => [$output],
-  'related' => [$relatedData],
+  'related' => [$relatedData]
 ]);

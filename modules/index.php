@@ -102,8 +102,6 @@ foreach ($recordsData as $recordData) {
 
 
 
-
-
 	// Add related data to the contact entry
 	$output[] = [
 		'fields' => $entry,
