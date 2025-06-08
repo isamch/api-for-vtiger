@@ -61,8 +61,8 @@ function getRelatedModuleData($baseUrl, $session, $relatedModule, $recordId) {
                     'mandatory' => $fieldMap[$fieldname]['mandatory']
                 ];
 
-                // Add user mapping for assigned_user_id field
-                if ($fieldname === 'assigned_user_id' && !empty($userMap)) {
+                // Add user mapping for assigned_user_id and modifiedby fields
+                if (($fieldname === 'assigned_user_id' || $fieldname === 'modifiedby') && !empty($userMap)) {
                     $formattedField['options'] = array_keys($userMap);
                     $formattedField['userMap'] = $userMap;
                 }
